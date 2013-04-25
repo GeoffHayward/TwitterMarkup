@@ -9,7 +9,7 @@ TwitterMarkup.applyAllToNode(document.getElementById('myTweets'));
 ```
 Where the HTML is:
 ```html
-<ul id="twitter">
+<ul id="myTweets">
     <li>TWEET 1</li>
     <li>TWEET 2</li>
     <li>TWEET 3</li>
