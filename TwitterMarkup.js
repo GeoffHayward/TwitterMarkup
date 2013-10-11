@@ -1,30 +1,48 @@
 /*
-* Static class:	TwitterMarkup
-* Version:	23/05/2012 v1.0.0
-*  
-* Use for marking up Twitter tweets’: urls, usernames and hashtags or all of them in one.
-*
+* Static object
+*   TwitterMarkup
+*   
+* Description 
+*   You can use this object to markup raw Twitter tweets urls, usernames and hashtags.
+* 
+* TwitterMarkup by Geoff Hayward - http://geoffhayward.eu
 */ 
 var TwitterMarkup = {
-	parseURL: function(pText) {
-		return pText.replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/=]+/g, function(url) {
-			return url.link(url).replace('href=', 'target="_blank" href=');
-		});
-	},
-	usernames: function(pText){
-		return pText.replace(/[@]+[A-Za-z0-9-_]+/g, function(u) {
-			return u.link("http://twitter.com/"+u.replace("@","")).replace('href=', 'target="_blank" href=');
-		});
-	},
-	hashtags: function(pText){
-		return pText.replace(/[#]+[A-Za-z0-9-_]+/g, function(t) {
-			return t.link("http://twitter.com/search?q="+t.replace("#","%23")).replace('href=', 'target="_blank" href=');
-		});
-	},
-	applyAllToString: function(pText){
-		return TwitterMarkup.hashtags(TwitterMarkup.usernames(TwitterMarkup.parseURL(pText)));
-	},
-	applyAllToNode: function(pNode) {
-		pNode.innerHTML = TwitterMarkup.applyAllToString(pNode.innerHTML);
-	}
+    /*
+    * Consider method as public 
+    * 
+    * This performs the markup transform on a DOM element that contains raw Twitter
+    * tweets.
+    */
+    transform: function(element){
+        var ts = element.innerHTML;
+        ts = TwitterMarkup._parseURLs(ts);
+        ts = TwitterMarkup._parseUsernames(ts);
+        ts = TwitterMarkup._parseHashtags(ts);
+        element.innerHTML = ts;
+    },
+    /*
+    * Consider method as private.
+    */      
+    _parseURLs: function(tweetsString) {
+        return tweetsString.replace(/(https?:\/\/t.co\/[A-Z0-9-_]{10})/ig, function() {
+            return '<a href="' + RegExp.$1 + '" target="_blank">' + RegExp.$1 + '</a>';
+        });
+    },
+    /*
+    * Consider method as private.
+    */      
+    _parseUsernames: function(tweetsString){
+        return tweetsString.replace(/[@]+([A-Z0-9_]+)/ig, function() {
+            return '<a href="http://twitter.com/' + RegExp.$1 + '" target="_blank">@' + RegExp.$1 + '</a>'; 
+	});
+    },
+    /*
+    * Consider method as private.
+    */      
+    _parseHashtags: function(tweetsString){
+        return tweetsString.replace(/[#]+([A-Za-z0-9-_]+)/ig, function() {
+            return '<a href="http://twitter.com/search?q=%23' + RegExp.$1 + '" target="_blank">#' + RegExp.$1 + '</a>'; 
+        });
+    }
 };
